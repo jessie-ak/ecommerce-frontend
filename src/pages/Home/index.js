@@ -5,10 +5,11 @@ import { getAllProducts } from "../../api/getAllProducts";
 import { getAllCategories } from "../../api/getAllCategories";
 import { Sidebar } from "../../components/Sidebar";
 
+
 export const Home = () => {
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
-    const [filteredProducts, setFilteredProducts] = useState([]);
+    const [displayfilteredProducts, setDisplayFilteredProducts] = useState([]);
     const [minValue, setMinValue] = useState(null);
     const [maxValue, setMaxValue] = useState(null);
     const [currentCategory, setCurrentCategory] = useState('all');
@@ -21,7 +22,7 @@ export const Home = () => {
             const updCategorys = [{ id: '1a', name: 'All' }, ...categorys];
             setProducts(products);
             setCategories(updCategorys);
-            setFilteredProducts(products); // Initialize with all products
+            setDisplayFilteredProducts(products); // Initialize with all products
         })();
     }, []);
 
@@ -35,7 +36,7 @@ export const Home = () => {
                 product.category.name.toLowerCase() === currentCategory.toLowerCase()
               );
         
-        setFilteredProducts(categoryFiltered);
+        setDisplayFilteredProducts(categoryFiltered);
     }, [currentCategory, products]);
 
     const onCategoryClick = (category) => {
@@ -44,17 +45,17 @@ export const Home = () => {
     };
 
     const onApplyPriceFilter = () => {
-        const CurrCatProLst= currentCategory === 'all'
+        const CurrCatProductLst= currentCategory === 'all'
             ? products
             : products.filter(product => 
                 product.category.name.toLowerCase() === currentCategory.toLowerCase()
               );
-        const priceFiltered = CurrCatProLst.filter(product => {
+        const priceFiltered = CurrCatProductLst.filter(product => {
             const meetsMin = minValue === null || product.price >= minValue;
             const meetsMax = maxValue === null || product.price <= maxValue;
             return meetsMin && meetsMax;
         });
-        setFilteredProducts(priceFiltered);
+        setDisplayFilteredProducts(priceFiltered);
     };
 
     return (
@@ -83,8 +84,8 @@ export const Home = () => {
                         ))}
                     </div>
                     <div className="flex flex-wrap justify-center gap-8">
-                        {filteredProducts?.length > 0 ? (
-                            filteredProducts.map((product) => (
+                        {displayfilteredProducts?.length > 0 ? (
+                            displayfilteredProducts.map((product) => (
                                 <ProductCard key={product.id} product={product} />
                             ))
                         ) : (
