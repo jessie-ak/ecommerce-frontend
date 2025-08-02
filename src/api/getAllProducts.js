@@ -12,3 +12,12 @@ export const getAllProducts = async() => {
    }
 }
 
+export const getProductDetails= async(productId)=>{
+   const URL =`${BASE_URL}/products/${productId}`;
+   try{
+      const {data} = await axios.get(URL);
+      return data;
+   }catch(err){
+      return err;
+   }
+}

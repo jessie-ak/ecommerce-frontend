@@ -1,0 +1,1 @@
+export const getTotalWishlistAmount = (wishlist)=> wishlist?.length> 0 && wishlist.reduce((acc,curr)=>acc+curr.price, 0) ;
