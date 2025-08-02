@@ -1,6 +1,8 @@
 import { Navbar } from "../../components/Navbar";
 import { ProductCard } from "../../components/ProductCard";
+import { Pagination } from "../../components/Pagination";
 import { useEffect, useState, useRef, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import { getAllProducts } from "../../api/getAllProducts";
 import { getAllCategories } from "../../api/getAllCategories";
 import { Sidebar } from "../../components/Sidebar";
@@ -13,6 +15,12 @@ export const Home = () => {
   const [colors, setColors] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchInput, setSearchInput] = useState('');
+  const [searchParams] = useSearchParams();
+
+  // Pagination
+  const itemsPerPage = 12;
+  const currentPage = Number(searchParams.get("page")) || 1;
+  const offset = (currentPage - 1) * itemsPerPage;
 
   // Current active filters
   const [activeFilters, setActiveFilters] = useState({
@@ -189,6 +197,11 @@ export const Home = () => {
     setSearchInput(e.target.value);
   };
 
+  // Get paginated products (now used directly in render)
+  const visibleProducts = useMemo(() => {
+    return filteredProducts.slice(offset, offset + itemsPerPage);
+  }, [filteredProducts, offset]);
+
   return (
     <div className={`h-screen flex flex-col bg-gray-50 dark:bg-gray-900 overflow-hidden`}>
       {/* Fixed Navbar */}
@@ -288,15 +301,25 @@ export const Home = () => {
             {/* Product Grid */}
             <div className="p-4 sm:px-6 sm:pt-6">
               {filteredProducts.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
-                  {filteredProducts.map((product) => (
-                    <ProductCard 
-                      key={product.id} 
-                      product={product} 
-                      className="w-full"
+                <>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
+                    {visibleProducts.map((product) => (
+                      <ProductCard 
+                        key={product.id} 
+                        product={product} 
+                        className="w-full"
+                      />
+                    ))}
+                  </div>
+                  
+                  {/* Pagination */}
+                  <div className="mt-8">
+                    <Pagination 
+                      totalItems={filteredProducts.length} 
+                      itemsPerPage={itemsPerPage}
                     />
-                  ))}
-                </div>
+                  </div>
+                </>
               ) : (
                 <div className="text-center py-12">
                   <p className="text-gray-500 dark:text-gray-400 text-lg mb-4">
