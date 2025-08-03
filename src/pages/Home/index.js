@@ -27,7 +27,7 @@ export const Home = () => {
     minPrice: null,
     maxPrice: null,
     category: 'all',
-    color: null,
+    colors: [],
     searchQuery: ''
   });
 
@@ -50,11 +50,13 @@ export const Home = () => {
       filtered = filtered.filter(p => p.category.id === activeFilters.category);
     }
     
-    if (activeFilters.color) {
-      filtered = filtered.filter(p => 
-        p.title.toLowerCase().includes(activeFilters.color.toLowerCase())
-      );
-    }
+     if (activeFilters.colors.length > 0) {
+    filtered = filtered.filter(p => 
+      activeFilters.colors.some(color => 
+        p.title.toLowerCase().includes(color.toLowerCase())
+      )
+    );
+  }
     
     filtered = filtered.filter(p => {
       return (activeFilters.minPrice === null || p.price >= activeFilters.minPrice) && 
@@ -178,7 +180,7 @@ export const Home = () => {
       minPrice: null,
       maxPrice: null,
       category: 'all',
-      color: null,
+      colors: [],
       searchQuery: ''
     });
   };
@@ -212,7 +214,8 @@ export const Home = () => {
       {isLoading ? (
         <div className="w-screen h-screen flex justify-center items-center bg-gray-100 dark:bg-gray-800">
           <img
-            src="images/Ecommerce_logo.png"
+            src={`${process.env.PUBLIC_URL}/images/Ecommerce_logo.png`}
+
             alt="Loading..."
             className="w-32 h-32 sm:w-52 sm:h-52 object-contain animate-pulse"
           />
@@ -278,25 +281,28 @@ export const Home = () => {
             </div>
 
             {/* Category Chips - Only show when not searching */}
-            {!searchQuery && (
-              <div className="hidden lg:block px-6 pt-2">
-                <div className="flex overflow-x-auto gap-2 pb-2">
-                  {categoriesWithCounts.map((category) => (
-                    <button
-                      key={category.id}
-                      onClick={() => handleCategoryClick(category.id)}
-                      className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium ${
-                        activeFilters.category === category.id
-                          ? "bg-gray-900 dark:bg-gray-700 text-white"
-                          : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
-                      }`}
-                    >
-                      {category.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
+            {/* Category Chips - Only show when not searching */}
+{!searchQuery && (
+  <div className="hidden lg:block px-6 pt-2">
+    <div className="flex overflow-x-auto gap-2 pb-2 
+        [-ms-overflow-style:none] [scrollbar-width:none] 
+        [&::-webkit-scrollbar]:hidden">
+      {categoriesWithCounts.map((category) => (
+        <button
+          key={category.id}
+          onClick={() => handleCategoryClick(category.id)}
+          className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium ${
+            activeFilters.category === category.id
+              ? "bg-gray-900 dark:bg-gray-700 text-white"
+              : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+          }`}
+        >
+          {category.name}
+        </button>
+      ))}
+    </div>
+  </div>
+)}
 
             {/* Product Grid */}
             <div className="p-4 sm:px-6 sm:pt-6">

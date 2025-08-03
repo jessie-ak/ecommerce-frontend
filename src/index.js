@@ -3,14 +3,14 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import { BrowserRouter } from "react-router-dom";
+import { HashRouter as Router } from "react-router-dom";
 import { CartProvider } from "./context/cart-context";
 import { LoginProvider } from "./context/login-context";
 import { ThemeProvider } from "./context/theme-context";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
+    <Router>
       <CartProvider>
         <LoginProvider>
           <ThemeProvider>
@@ -18,7 +18,7 @@ root.render(
           </ThemeProvider>
         </LoginProvider>
       </CartProvider>
-    </BrowserRouter>
+    </Router>
   </React.StrictMode>
 );
 

@@ -89,7 +89,7 @@ export const LoginForm = () => {
         <div className="flex flex-col gap-2 p-2">
           <label className={darkMode ? "text-gray-300" : "text-gray-700"}>Email *</label>
           <input 
-            className={`focus:outline-none text-sm border-b p-2 px-1 w-full ${
+            className={`focus:outline-none rounded text-sm border-b p-2 px-1 w-full ${
               darkMode
                 ? "bg-gray-700 border-gray-600 hover:bg-gray-600 text-white placeholder-gray-400"
                 : "border-black hover:bg-gray-200"
@@ -104,7 +104,7 @@ export const LoginForm = () => {
         <div className="flex flex-col gap-2 p-2">
           <label className={darkMode ? "text-gray-300" : "text-gray-700"}>Password *</label>
           <input 
-            className={`focus:outline-none text-sm border-b p-2 px-1 w-full ${
+            className={`focus:outline-none rounded text-sm border-b p-2 px-1 w-full ${
               darkMode
                 ? "bg-gray-700 border-gray-600 hover:bg-gray-600 text-white placeholder-gray-400"
                 : "border-black hover:bg-gray-200"

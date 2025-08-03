@@ -22,9 +22,13 @@ export const ProductDetails = () => {
     const fetchProductDetails = async () => {
       try {
         const data = await getProductDetails(productId);
+        // Ensure images array exists and has at least one image
+        if (!data.images || !Array.isArray(data.images)) {
+          data.images = ['/images/default-product.jpg'];
+        }
         setProduct(data);
       } catch (err) {
-        setError(err.message);
+        setError(err.message || 'Failed to load product details');
       } finally {
         setLoading(false);
       }
@@ -33,9 +37,12 @@ export const ProductDetails = () => {
     fetchProductDetails();
   }, [productId]);
 
+  // Safe image access with fallback
+  const currentImage = product?.images?.[currentImageIndex] || '/images/default-product.jpg';
+
   const onCartClick = (e) => {
     e?.stopPropagation();
-    if (!isProductInCart) {
+    if (!isProductInCart && product) {
       cartDispatch({
         type: "ADD_TO_CART",
         payload: { product, quantity },
@@ -47,7 +54,7 @@ export const ProductDetails = () => {
 
   const onWishlistClick = (e) => {
     e?.stopPropagation();
-    if (!isProductInWishlist) {
+    if (!isProductInWishlist && product) {
       cartDispatch({
         type: "ADD_TO_WISHLIST",
         payload: { product },
@@ -58,7 +65,14 @@ export const ProductDetails = () => {
   };
 
   if (loading) {
-    return <div className="text-center py-8 dark:text-white">Loading product details...</div>;
+    return (
+      <div className="fixed inset-0 flex items-center justify-center dark:text-white">
+  <div className="text-center">
+    <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mb-2"></div>
+    <p>Loading product details...</p>
+  </div>
+</div>
+    );
   }
 
   if (error) {
@@ -76,7 +90,17 @@ export const ProductDetails = () => {
   }
 
   if (!product) {
-    return <div className="text-center py-8 dark:text-white">Product not found</div>;
+    return (
+      <div className="text-center py-8 dark:text-white">
+        <p>Product not found</p>
+        <button
+          onClick={() => navigate("/")}
+          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
+        >
+          Back to Home
+        </button>
+      </div>
+    );
   }
 
   return (
@@ -86,30 +110,38 @@ export const ProductDetails = () => {
         <div className="space-y-4">
           <div className="border rounded-lg overflow-hidden dark:border-gray-700 bg-white dark:bg-gray-800">
             <img
-              src={product.images[currentImageIndex]}
+              src={currentImage}
               alt={product.title}
               className="w-full h-96 object-contain"
+              onError={(e) => {
+                e.target.src = '/images/default-product.jpg';
+              }}
             />
           </div>
-          <div className="flex gap-2 overflow-x-auto py-2">
-            {product.images.map((img, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentImageIndex(index)}
-                className={`flex-shrink-0 w-16 h-16 border rounded-md overflow-hidden bg-white dark:bg-gray-800 ${
-                  currentImageIndex === index 
-                    ? "border-blue-500 border-2 dark:border-blue-600" 
-                    : "border-gray-300 dark:border-gray-600"
-                }`}
-              >
-                <img
-                  src={img}
-                  alt={`${product.title} thumbnail ${index + 1}`}
-                  className="w-full h-full object-contain"
-                />
-              </button>
-            ))}
-          </div>
+          {product.images?.length > 1 && (
+            <div className="flex gap-2 overflow-x-auto py-2">
+              {product.images.map((img, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentImageIndex(index)}
+                  className={`flex-shrink-0 w-16 h-16 border rounded-md overflow-hidden bg-white dark:bg-gray-800 ${
+                    currentImageIndex === index 
+                      ? "border-blue-500 border-2 dark:border-blue-600" 
+                      : "border-gray-300 dark:border-gray-600"
+                  }`}
+                >
+                  <img
+                    src={img}
+                    alt={`${product.title} thumbnail ${index + 1}`}
+                    className="w-full h-full object-contain"
+                    onError={(e) => {
+                      e.target.src = '/images/default-product.jpg';
+                    }}
+                  />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Product Info */}
@@ -129,7 +161,14 @@ export const ProductDetails = () => {
             </span>
           </div>
 
-          <div className="text-2xl font-semibold dark:text-white">${product.price}</div>
+          <div className="text-2xl font-semibold dark:text-white">
+            Rs. {product.price.toLocaleString()}
+            {quantity > 1 && (
+              <span className="text-lg text-gray-500 dark:text-gray-400 ml-2">
+                (Total: Rs. {(product.price * quantity).toLocaleString()})
+              </span>
+            )}
+          </div>
 
           <p className="text-gray-700 dark:text-gray-300">{product.description}</p>
 
@@ -144,6 +183,7 @@ export const ProductDetails = () => {
               <button
                 onClick={() => setQuantity(q => Math.max(1, q - 1))}
                 className="px-3 py-1 text-xl hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white"
+                aria-label="Decrease quantity"
               >
                 -
               </button>
@@ -153,40 +193,39 @@ export const ProductDetails = () => {
               <button
                 onClick={() => setQuantity(q => q + 1)}
                 className="px-3 py-1 text-xl hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white"
+                aria-label="Increase quantity"
               >
                 +
               </button>
             </div>
 
-            <div className="flex items-center space-x-4">
-              <div className="flex space-x-4">
-                <button
-                  onClick={onCartClick}
-                  className={`px-4 py-2 rounded-md flex items-center gap-2 transition-colors ${
-                    isProductInCart
-                      ? "bg-red-50 dark:bg-gray-700 border border-red-200 dark:border-gray-600 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-gray-600"
-                      : "bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
-                  }`}
-                >
-                  <span className="material-symbols-outlined">
-                    {isProductInCart ? "shopping_cart_checkout" : "shopping_cart"}
-                  </span>
-                  {isProductInCart ? "Go To Cart" : "Add To Cart"}
-                </button>
-                <button
-                  onClick={onWishlistClick}
-                  className={`px-4 py-2 rounded-md flex items-center gap-2 transition-colors ${
-                    isProductInWishlist
-                      ? "bg-red-50 dark:bg-gray-700 border border-red-200 dark:border-gray-600 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-gray-600"
-                      : "bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
-                  }`}
-                >
-                  <span className={`material-symbols-outlined ${isProductInWishlist ? "text-red-500" : ""}`}>
-                    {isProductInWishlist ? "heart_check" : "favorite"}
-                  </span>
-                  {isProductInWishlist ? "View Wishlist" : "Add To Wishlist"}
-                </button>
-              </div>
+            <div className="flex flex-wrap gap-4">
+              <button
+                onClick={onCartClick}
+                className={`px-4 py-2 rounded-md flex items-center gap-2 transition-colors ${
+                  isProductInCart
+                    ? "bg-red-50 dark:bg-gray-700 border border-red-200 dark:border-gray-600 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-gray-600"
+                    : "bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
+                }`}
+              >
+                <span className="material-symbols-outlined">
+                  {isProductInCart ? "shopping_cart_checkout" : "shopping_cart"}
+                </span>
+                {isProductInCart ? "Go To Cart" : "Add To Cart"}
+              </button>
+              <button
+                onClick={onWishlistClick}
+                className={`px-4 py-2 rounded-md flex items-center gap-2 transition-colors ${
+                  isProductInWishlist
+                    ? "bg-red-50 dark:bg-gray-700 border border-red-200 dark:border-gray-600 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-gray-600"
+                    : "bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
+                }`}
+              >
+                <span className={`material-symbols-outlined ${isProductInWishlist ? "text-red-500" : ""}`}>
+                  {isProductInWishlist ? "heart_check" : "favorite"}
+                </span>
+                {isProductInWishlist ? "View Wishlist" : "Add To Wishlist"}
+              </button>
             </div>
           </div>
         </div>

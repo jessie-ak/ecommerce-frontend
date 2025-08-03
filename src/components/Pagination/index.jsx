@@ -58,7 +58,7 @@ export const Pagination = ({ totalItems, itemsPerPage }) => {
         className={`px-3 py-1 rounded-md ${
           currentPage === 1
             ? darkMode
-              ? "bg-gray-700 text-gray-500 cursor-not-allowed"
+              ? "bg-gray-700 text-white cursor-not-allowed"
               : "bg-gray-200 text-gray-500 cursor-not-allowed"
             : darkMode
             ? "bg-gray-700 hover:bg-gray-600"
@@ -74,7 +74,9 @@ export const Pagination = ({ totalItems, itemsPerPage }) => {
           onClick={() => handlePageChange(page)}
           className={`px-3 py-1 rounded-md min-w-[40px] ${
             page === '...'
-              ? 'cursor-default'
+              ? darkMode
+          ? "cursor-default text-white"  // Only add text-white for dark mode ellipsis
+          : "cursor-default"
               : page === currentPage
               ? "bg-blue-500 text-white"
               : darkMode
@@ -93,7 +95,7 @@ export const Pagination = ({ totalItems, itemsPerPage }) => {
         className={`px-3 py-1 rounded-md ${
           currentPage === totalPages
             ? darkMode
-              ? "bg-gray-700 text-gray-500 cursor-not-allowed"
+              ? "bg-gray-700 text-white cursor-not-allowed"
               : "bg-gray-200 text-gray-500 cursor-not-allowed"
             : darkMode
             ? "bg-gray-700 hover:bg-gray-600"

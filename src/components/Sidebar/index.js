@@ -11,15 +11,14 @@ export const Sidebar = ({
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [selectedColor, setSelectedColor] = useState(null);
-
+  const [selectedColors, setSelectedColors] = useState([]);
 
   const handleApplyFilters = () => {
     onApplyFilterClick({
       minPrice: minPrice || null,
       maxPrice: maxPrice || null,
       category: selectedCategory,
-      color: selectedColor,
+      colors: selectedColors.length > 0 ? selectedColors : null,
     });
     if (onClose) onClose();
   };
@@ -28,17 +27,23 @@ export const Sidebar = ({
     setMinPrice("");
     setMaxPrice("");
     setSelectedCategory("all");
-    setSelectedColor(null);
+    setSelectedColors([]);
     onResetFilters();
     if (onClose) onClose();
   };
 
+  const toggleColorSelection = (color) => {
+    setSelectedColors(prev => 
+      prev.includes(color)
+        ? prev.filter(c => c !== color)
+        : [...prev, color]
+    );
+  };
+
   return (
-    <div
-      className={`flex flex-col bg-white dark:bg-gray-800 ${
-        isMobile ? "h-full shadow-xl" : "border-r dark:border-gray-700"
-      }`}
-    >
+    <div className={`flex flex-col bg-white dark:bg-gray-800 ${
+      isMobile ? "h-full shadow-xl" : "border-r dark:border-gray-700"
+    }`}>
       {/* Mobile Header */}
       {isMobile && (
         <div className="flex justify-between items-center p-4 border-b dark:border-gray-700">
@@ -59,65 +64,56 @@ export const Sidebar = ({
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto p-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-        
-
         {/* Categories Section */}
         <div className="mb-8">
           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 dark:text-white">
             Categories
           </h3>
-          <ul className="space-y-2">
+          <div className="flex flex-wrap gap-2">
             {categories.map((category) => (
-              <li key={category.id}>
-                <button
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`w-full text-left py-2 px-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md flex items-center gap-2 ${
-                    selectedCategory === category.id
-                      ? "bg-gray-100 dark:bg-gray-700 font-medium"
-                      : ""
-                  }`}
-                >
-                  <span className="flex-1 dark:text-gray-200">
-                    {category.name}
-                  </span>
-                  <span className="text-gray-500 dark:text-gray-400 text-sm">
-                    ({Math.floor(Math.random() * 50)})
-                  </span>
-                </button>
-              </li>
+              <button
+                key={category.id}
+                onClick={() => setSelectedCategory(category.id)}
+                className={`px-3 py-1 rounded-full text-sm ${
+                  selectedCategory === category.id
+                    ? "bg-gray-900 text-white dark:bg-blue-600"
+                    : "bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200"
+                }`}
+              >
+                {category.name} ({Math.floor(Math.random() * 50)})
+              </button>
             ))}
-          </ul>
+          </div>
         </div>
 
-        {/* Rest of your existing code remains the same, just add dark mode classes */}
+        {/* Colors Section */}
         {colors.length > 0 && (
           <div className="mb-8">
             <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 dark:text-white">
-              Colors
+              Colors {selectedColors.length > 0 && `(${selectedColors.length} selected)`}
             </h3>
-            <div className="space-y-2">
+            <div className="flex flex-wrap gap-2">
               {colors.map((color) => (
                 <button
                   key={color}
-                  onClick={() =>
-                    setSelectedColor(selectedColor === color ? null : color)
-                  }
-                  className={`w-full text-left py-2 px-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md flex items-center gap-2 ${
-                    selectedColor === color
-                      ? "bg-gray-100 dark:bg-gray-700 font-medium"
-                      : ""
+                  onClick={() => toggleColorSelection(color)}
+                  className={`px-3 py-1 rounded-full text-sm capitalize flex items-center ${
+                    selectedColors.includes(color)
+                      ? "bg-gray-900 text-white dark:bg-blue-600"
+                      : "bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200"
                   }`}
                 >
-                  <span className="flex-1 capitalize dark:text-gray-200">
-                    {color}
-                  </span>
+                  {color}
+                  {selectedColors.includes(color) && (
+                    <span className="ml-1 text-xs">✓</span>
+                  )}
                 </button>
               ))}
             </div>
           </div>
         )}
 
-        {/* Price Filter */}
+        {/* Price Filter Section - Restored */}
         <div className="mb-8">
           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 dark:text-white">
             Price Range

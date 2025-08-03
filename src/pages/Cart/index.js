@@ -15,7 +15,7 @@ export const Cart = () => {
       <div className="fixed top-0 left-0 right-0 z-50">
         <Navbar />
       </div>
-      <div className="pt-20 overflow-hidden">
+      <div className="pt-16 overflow-hidden">
         <main className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-16 px-4 sm:px-6">
         {cart?.length > 0 ? (
           <div className="max-w-7xl mx-auto">

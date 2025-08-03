@@ -15,7 +15,7 @@ export const Wishlist = () => {
       <div className="fixed top-0 left-0 right-0 z-50">
         <Navbar />
       </div>
-      <div className="pt-20 overflow-hidden">
+      <div className="pt-16 overflow-hidden">
       <main className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-16 px-4 sm:px-6">
         {wishlist?.length > 0 ? (
           <div className="max-w-7xl mx-auto">
@@ -41,7 +41,7 @@ export const Wishlist = () => {
               </div>
 
               {/* Price Details - Hidden in wishlist as per your original code */}
-              {path === '/cart' && (
+              {path === '/wishlist' && (
                 <div className="lg:w-80 xl:w-96">
                   <div className="lg:sticky lg:top-24">
                     <PriceDetails path={path} />
