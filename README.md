@@ -1,3 +1,7 @@
+# Live Demo for the frontend ecommerce site at:
+
+[![Live Demo](https://img.shields.io/badge/-Ecommerce%20Demo-brightgreen?style=for-the-badge)](https://jessie-ak.github.io/ecommerce-frontend/)
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
